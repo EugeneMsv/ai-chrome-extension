@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini Summarizer Settings</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 500px;
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      min-height: 50px;
+      resize: vertical;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .reset-button {
+      background-color: #f44336; /* Red */
+      padding: 8px 16px; /* Smaller padding */
+    }
+
+    .prompt-container {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+<h1>Gemini Summarizer Settings</h1>
+
+<label for="geminiApiKey">Gemini API Key:</label>
+<input type="text" id="geminiApiKey">
+
+<label for="maxOutputTokens">Max Output Tokens (1-3000):</label>
+<input type="number" id="maxOutputTokens" min="1" max="3000" value="1000">
+
+<div id="promptTemplatesContainer">
+  <!-- Prompt template inputs will be added here -->
+</div>
+
+<button id="resetPrompts" class="reset-button">Reset Prompts</button>
+<button id="applyChanges">Apply Changes</button>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "gemini-chrome-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "zip": "node scripts/zip.js",
+    "pack": "npm run zip && echo 'Now you can pack extension in chrome://extensions/'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gemini",
+    "chrome",
+    "extension"
+    ],
+  "author": "Evgenii Moiseev",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.7"
+  }
+
+}
