@@ -224,7 +224,7 @@ function sendRequestToBackground(action, text, callback, additionalParams = {}) 
     try {
         console.log(`sendRequestToBackground: Sending ${action} request`);
         chrome.runtime.sendMessage(
-            { action: action, text: text, ...additionalParams },
+            {  module: 'promptExecutor', action: action, text: text, ...additionalParams },
             (response) => {
                 if (response) {
                     callback(response);
