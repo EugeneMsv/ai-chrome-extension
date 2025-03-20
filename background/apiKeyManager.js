@@ -25,7 +25,6 @@ export async function saveApiKey(apiKey) {
 
 // Add a listener for API key related messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.module === 'apiKeyManager') {
     console.log(`apiKeyManager: Received action=${request.action}`);
     if (request.action === 'getApiKey') {
       (async () => {
@@ -45,5 +44,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })();
       return true;
     }
-  }
+
 });

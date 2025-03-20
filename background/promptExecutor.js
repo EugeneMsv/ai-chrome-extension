@@ -125,7 +125,6 @@ async function executeTranslatePrompt(text, targetLanguage, promptTemplates) {
 
 // Add a listener for prompt execution related messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.module === 'promptExecutor') {
     console.log(`promptExecutor: Received action=${request.action}`);
     if (request.action === 'summarize') {
       (async () => {
@@ -168,5 +167,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })();
       return true;
     }
-  }
+
 });

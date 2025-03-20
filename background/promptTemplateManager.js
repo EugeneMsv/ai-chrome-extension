@@ -31,7 +31,6 @@ export async function resetPromptTemplates() {
 
 // Add a listener for prompt template related messages
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.module === 'promptTemplateManager') {
     console.log(`promptTemplateManager: Received action=${request.action}`);
     if (request.action === 'getPromptTemplates') {
       (async () => {
@@ -59,5 +58,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       })();
       return true;
     }
-  }
+
 });
