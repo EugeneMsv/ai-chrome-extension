@@ -2,7 +2,7 @@
 
 import { getApiKey } from './apiKeyManager.js';
 import { getPromptTemplates } from './promptTemplateManager.js';
-import { getMaxOutputTokens } from './maxOutputTokensManager.js';
+import { GeminiGenerationConfigBuilder } from './config/builder/gemini/generationConfigBuilder.js';
 
 export const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=';
 
@@ -24,7 +24,7 @@ function addToCache(key, response) {
   responseCache.set(key, response);
 }
 
-async function sendToGeminiApi(apiKey, prompt, maxOutputTokens) {
+async function sendToGeminiApi(apiKey, prompt, generationConfig) {
   const response = await fetch(API_BASE_URL + apiKey, {
     method: 'POST',
     headers: {
@@ -36,12 +36,7 @@ async function sendToGeminiApi(apiKey, prompt, maxOutputTokens) {
           text: prompt
         }]
       }],
-      generationConfig: {
-        maxOutputTokens: maxOutputTokens, // Set the desired token limit here
-        temperature: 0.9,
-        topP: 1,
-        topK: 1
-      }
+      generationConfig: generationConfig
     }),
   });
   return await response.json();
@@ -75,8 +70,9 @@ async function executePrompt(prompt) {
 
   try {
     const apiKey = await getApiKey();
-    const maxOutputTokens = await getMaxOutputTokens();
-    const response = await sendToGeminiApi(apiKey, prompt, maxOutputTokens);
+    const geminiConfigBuilder = new GeminiGenerationConfigBuilder();
+    const generationConfig = await geminiConfigBuilder.build();
+    const response = await sendToGeminiApi(apiKey, prompt, generationConfig);
     const result = extractSummaryFromResponse(response);
     if (responseCache.size >= 100) {
       responseCache.delete(responseCache.keys().next().value);
