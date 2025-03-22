@@ -1,3 +1,4 @@
+import { marked } from 'marked';
 
 let debounceTimeout = null;
 let hideTimeout = null;
@@ -263,22 +264,47 @@ function showPopup(content) {
     popup.style.left = '50%';
     popup.style.top = '50%';
     popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.background = 'white';
+    popup.style.background = '#222';
     popup.style.border = '1px solid black';
     popup.style.padding = '20px';
     popup.style.zIndex = '9999';
     popup.style.width = '300px';
 
+    popup.style.color = 'white'; // Light gray text
+    popup.style.fontFamily = 'Arial, sans-serif'; // Add font family
+    popup.style.borderRadius = '5px'; // Add border
+
     const closeButton = document.createElement('button');
     closeButton.textContent = 'Close';
     closeButton.style.marginTop = '10px';
+    // Style the close button
+    closeButton.style.display = 'block';
+    closeButton.style.float = 'right';
+    closeButton.style.background = '#444'; // Darker gray
+    closeButton.style.color = '#ddd'; // Light gray text
+    closeButton.style.border = 'none';
+    closeButton.style.fontSize = '16px';
+    closeButton.style.borderRadius = '3px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.style.textAlign = 'center';
+    closeButton.style.width = '100%';
+    closeButton.addEventListener('mouseover', () => {
+        closeButton.style.backgroundColor = '#666';
+    });
+
+    closeButton.addEventListener('mouseout', () => {
+        closeButton.style.backgroundColor = '#444';
+    });
     closeButton.addEventListener('click', () => {
         console.log('showPopup: Close button clicked');
+        closeButton.style.backgroundColor = 'red';
         document.body.removeChild(popup);
     });
 
     const contentArea = document.createElement('div');
-    contentArea.textContent = content;
+    contentArea.style.background = '#222'; // Dark gray
+
+    contentArea.innerHTML = marked.parse(content);
 
     popup.appendChild(contentArea);
     popup.appendChild(document.createElement('br'));
@@ -343,6 +369,3 @@ document.addEventListener('mouseup', (event) => {
         handleSelectionAndShowAiButton(event);
     }, 100); // Adjust the delay as needed (100ms in this case)
 });
-
-
-
