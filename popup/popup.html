@@ -62,12 +62,72 @@
       align-items: center;
       margin-bottom: 10px;
     }
+
     ul {
       list-style: none;
       padding: 0;
     }
+
     li {
       margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .domain-list-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .domain-list-buttons button {
+      padding: 0;
+      font-size: xx-large; /* Increased font size */
+      width: 30px; /* Increased width */
+      height: 30px; /* Increased height */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      line-height: 1; /* Remove extra line height */
+      transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+    }
+
+    .domain-list-buttons button:hover {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Add shiny effect on hover */
+    }
+
+    .add-domain-button {
+      color: #4CAF50; /* Green */
+      background: none;
+      border: none;
+      font-size: xx-large;
+    }
+
+    .remove-domain-button {
+      color: #f44336; /* Red */
+      background: none;
+      border: none;
+      font-size: xx-large;
+    }
+    .blocked-domains-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .blocked-domains-column {
+      flex: 1;
+    }
+    #addDomainInputContainer {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    #addDomainInput {
+      flex-grow: 1;
+      margin-right: 10px;
+      height: 30px; /* Match the height of the button */
     }
   </style>
 </head>
@@ -88,12 +148,18 @@
 <button id="applyChanges">Apply Changes</button>
 
 <h2>Blocked Domains</h2>
-<input type="text" id="addDomainInput" placeholder="Add a domain (e.g., example.com)">
-<button id="addDomainButton">Add Domain</button>
-<button id="addCurrentDomainButton">Add Current Domain</button>
-<button id="removeCurrentDomainButton">Remove Current Domain</button>
-<ul id="blockedDomainsList"></ul>
-<button id="saveButton">Save</button>
+<div id="addDomainInputContainer">
+  <input type="text" id="addDomainInput" placeholder="Add a domain (e.g., example.com)">
+  <button id="addDomainButton" class="add-domain-button">+</button>
+</div>
+<div class="blocked-domains-container">
+  <div class="blocked-domains-column">
+    <ul id="blockedDomainsListColumn1"></ul>
+  </div>
+  <div class="blocked-domains-column">
+    <ul id="blockedDomainsListColumn2"></ul>
+  </div>
+</div>
 
 <script type="module" src="popup.js"></script>
 </body>

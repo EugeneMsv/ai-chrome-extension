@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await chrome.runtime.sendMessage({ action: 'savePromptTemplates', promptTemplates: newPromptTemplates });
   }
 
-    // Function to load API key
+  // Function to load API key
   async function loadApiKey() {
     const apiKey = await chrome.runtime.sendMessage({ action: 'getApiKey' });
     if (apiKey) {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-    // Function to mask the API key
+  // Function to mask the API key
   function maskApiKey() {
     const apiKey = apiKeyInput.dataset.fullApiKey;
     if (apiKey) {
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-    // Function to save API key
+  // Function to save API key
   async function saveApiKey() {
     const apiKey = apiKeyInput.dataset.fullApiKey;
     if (apiKey) {
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     apiKeyInput.dataset.fullApiKey = apiKeyInput.value;
   });
 
-    // Function to load maxOutputTokens
+  // Function to load maxOutputTokens
   async function loadMaxOutputTokens() {
     const maxOutputTokens = await chrome.runtime.sendMessage({ action: 'getMaxOutputTokens' });
     maxOutputTokensInput.value = maxOutputTokens;
@@ -111,10 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
     await chrome.runtime.sendMessage({ action: 'saveMaxOutputTokens', maxOutputTokens: maxOutputTokens });
   }
 
-    // Load prompt templates and API key on popup open
+  // Load prompt templates and API key on popup open
   loadApiKey();
   loadPromptTemplates();
-    loadMaxOutputTokens();
+  loadMaxOutputTokens();
 
 
   // Reset prompts button
@@ -131,30 +131,60 @@ document.addEventListener('DOMContentLoaded', () => {
     alert('Settings saved!');
   });
 
-  const blockedDomainsList = document.getElementById('blockedDomainsList');
+  const blockedDomainsListColumn1 = document.getElementById('blockedDomainsListColumn1');
+  const blockedDomainsListColumn2 = document.getElementById('blockedDomainsListColumn2');
   const addDomainInput = document.getElementById('addDomainInput');
   const addDomainButton = document.getElementById('addDomainButton');
-  const saveButton = document.getElementById('saveButton');
-
 
   async function renderBlockedDomains() {
-    blockedDomainsList.innerHTML = '';
+    blockedDomainsListColumn1.innerHTML = '';
+    blockedDomainsListColumn2.innerHTML = '';
     const blockedDomains = await chrome.runtime.sendMessage({ action: 'getBlockedDomains' });
-    blockedDomains.forEach((domain) => {
+    const column1 = [];
+    const column2 = [];
+    blockedDomains.forEach((domain, index) => {
+      if (index % 2 === 0) {
+        column1.push(domain);
+      } else {
+        column2.push(domain);
+      }
+    });
+
+    column1.forEach((domain) => {
       const listItem = document.createElement('li');
       listItem.textContent = domain;
 
       const removeButton = document.createElement('button');
-      removeButton.textContent = 'Remove';
+      removeButton.textContent = '-';
+      removeButton.classList.add('remove-domain-button');
       removeButton.addEventListener('click', async () => {
         await chrome.runtime.sendMessage({ action: 'removeBlockedDomain', domain: domain });
         renderBlockedDomains();
       });
-
-      listItem.appendChild(removeButton);
-      blockedDomainsList.appendChild(listItem);
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.classList.add('domain-list-buttons');
+      buttonsContainer.appendChild(removeButton);
+      listItem.appendChild(buttonsContainer);
+      blockedDomainsListColumn1.appendChild(listItem);
     });
-  };
+    column2.forEach((domain) => {
+      const listItem = document.createElement('li');
+      listItem.textContent = domain;
+
+      const removeButton = document.createElement('button');
+      removeButton.textContent = '-';
+      removeButton.classList.add('remove-domain-button');
+      removeButton.addEventListener('click', async () => {
+        await chrome.runtime.sendMessage({ action: 'removeBlockedDomain', domain: domain });
+        renderBlockedDomains();
+      });
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.classList.add('domain-list-buttons');
+      buttonsContainer.appendChild(removeButton);
+      listItem.appendChild(buttonsContainer);
+      blockedDomainsListColumn2.appendChild(listItem);
+    });
+  }
 
   renderBlockedDomains();
 
@@ -167,31 +197,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  saveButton.addEventListener('click', async () => {
-    const newDomains = [];
-    const listItems = blockedDomainsList.querySelectorAll('li');
-    listItems.forEach(item => {
-      newDomains.push(item.textContent.replace('Remove', '').trim());
-    });
-    await chrome.runtime.sendMessage({ action: 'updateBlockedDomains', domains: newDomains });
-  });
-
-  const addCurrentDomainButton = document.getElementById('addCurrentDomainButton');
-  const removeCurrentDomainButton = document.getElementById('removeCurrentDomainButton');
-
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
     const currentUrl = new URL(currentTab.url);
     const currentDomain = currentUrl.hostname;
-
-    addCurrentDomainButton.addEventListener('click', async () => {
-      await chrome.runtime.sendMessage({ action: 'addBlockedDomain', domain: currentDomain });
-      await renderBlockedDomains();
-    });
-
-    removeCurrentDomainButton.addEventListener('click', async () => {
-      await chrome.runtime.sendMessage({ action: 'removeBlockedDomain', domain: currentDomain });
-      await renderBlockedDomains();
-    });
+    addDomainInput.value = currentDomain;
   });
 });
