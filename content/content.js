@@ -312,24 +312,34 @@ function showPopup(content) {
 
     document.body.appendChild(popup);
 }
+ function isCurrentDomainBlocked() {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ action: 'isDomainBlocked' }, (response) => {
+            resolve(response.isBlocked);
+        });
+    });
+}
 
 function handleSelectionAndShowAiButton(event) {
     const selectedText = window.getSelection().toString().trim();
     const selection = window.getSelection();
     if (selection.rangeCount > 0 && typeof event !== 'undefined') {
-        let x = event.clientX;
-        let y = event.clientY;
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
+        const isBlocked = isCurrentDomainBlocked()
+        if (isBlocked) {
+            let x = event.clientX;
+            let y = event.clientY;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
 
-        const offset = 50;
+            const offset = 50;
 
-        const xOffset = Math.max(0.1 * windowWidth, offset);
-        const yOffset = Math.max(0.1 * windowHeight, offset);
-        x = (x + xOffset >= windowWidth) ? x - offset : x + offset;
-        y = (y + yOffset >= windowHeight) ? y - offset : y + offset;
+            const xOffset = Math.max(0.1 * windowWidth, offset);
+            const yOffset = Math.max(0.1 * windowHeight, offset);
+            x = (x + xOffset >= windowWidth) ? x - offset : x + offset;
+            y = (y + yOffset >= windowHeight) ? y - offset : y + offset;
 
-        showAiButton(selectedText, x + window.pageXOffset, y + window.pageYOffset);
+            showAiButton(selectedText, x + window.pageXOffset, y + window.pageYOffset);
+        }
     }
 }
 function showAiButton(selectedText, x, y) {
