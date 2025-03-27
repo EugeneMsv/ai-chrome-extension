@@ -1,0 +1,165 @@
+body {
+  font-family: sans-serif;
+  width: 500px;
+  padding: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+textarea {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  min-height: 50px;
+  resize: vertical;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.reset-button {
+  background-color: #f44336; /* Red */
+  padding: 8px 16px; /* Smaller padding */
+}
+
+.prompt-container {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.domain-list-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.domain-list-buttons button {
+  padding: 0;
+  font-size: xx-large; /* Increased font size */
+  width: 30px; /* Increased width */
+  height: 30px; /* Increased height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1; /* Remove extra line height */
+  transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+}
+
+.domain-list-buttons button:hover {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); /* Add shiny effect on hover */
+}
+
+.add-domain-button {
+  color: #4CAF50; /* Green */
+  background: none;
+  border: none;
+  font-size: xx-large;
+}
+
+.remove-domain-button {
+  color: #f44336; /* Red */
+  background: none;
+  border: none;
+  font-size: xx-large;
+}
+
+.blocked-domains-container {
+  display: flex;
+  gap: 20px;
+}
+
+.blocked-domains-column {
+  flex: 1;
+}
+
+#addDomainInputContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#addDomainInput {
+  flex-grow: 1;
+  margin-right: 10px;
+  height: 30px; /* Match the height of the button */
+}
+
+/* Tab styles */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #ccc;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontent.active {
+  display: block;
+}
