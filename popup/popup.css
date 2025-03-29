@@ -38,6 +38,11 @@ button {
   font-size: 16px;
   cursor: pointer;
   margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #e0e0e0; /* Slightly brighter on hover */
 }
 
 .reset-button {
@@ -162,4 +167,14 @@ li {
 
 .tabcontent.active {
   display: block;
+}
+
+.confirmation-message {
+  display: none;
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green */
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
 }

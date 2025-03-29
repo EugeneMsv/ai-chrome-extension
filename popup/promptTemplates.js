@@ -3,8 +3,13 @@
 export function setupPromptTemplates() {
   const promptTemplatesContainer = document.getElementById('promptTemplatesContainer');
   const resetPromptsButton = document.getElementById('resetPrompts');
+  const applyChangesButton = document.getElementById('promptTemplates-apply');
+  const confirmationMessage = document.getElementById('promptTemplatesConfirmation');
 
-  if (!promptTemplatesContainer || !resetPromptsButton) {
+  if (!promptTemplatesContainer
+  || !resetPromptsButton
+  || !applyChangesButton
+  || !confirmationMessage) {
     console.error("Prompt Templates elements not found.");
     return;
   }
@@ -32,13 +37,14 @@ export function setupPromptTemplates() {
         const defaultTemplates = await chrome.runtime.sendMessage({ action: 'getDefaultPromptTemplates' });
         textarea.value = defaultTemplates[key];
       });
-      header.appendChild(resetButton);
+
       container.appendChild(header);
 
       const textarea = document.createElement('textarea');
       textarea.id = key;
       textarea.value = promptTemplates[key];
       container.appendChild(textarea);
+      container.appendChild(resetButton);
 
       promptTemplatesContainer.appendChild(container);
     }
@@ -52,6 +58,15 @@ export function setupPromptTemplates() {
       newPromptTemplates[textarea.id] = textarea.value;
     });
     await chrome.runtime.sendMessage({ action: 'savePromptTemplates', promptTemplates: newPromptTemplates });
+    showConfirmation(confirmationMessage);
+  }
+
+  // Function to show confirmation message
+  function showConfirmation(messageElement) {
+    messageElement.style.display = 'block';
+    setTimeout(() => {
+      messageElement.style.display = 'none';
+    }, 3000); // Hide after 3 seconds
   }
 
   // Load prompt templates on popup open
@@ -61,7 +76,15 @@ export function setupPromptTemplates() {
   resetPromptsButton.addEventListener('click', async () => {
     await chrome.runtime.sendMessage({ action: 'resetPromptTemplates' });
     loadPromptTemplates(); // Reload templates after reset
+    showConfirmation(confirmationMessage);
   });
 
-  return { loadPromptTemplates, savePromptTemplates };
+
+
+  // Apply changes button
+  applyChangesButton.addEventListener('click', async () => {
+    await savePromptTemplates();
+  });
+
+  return;
 }

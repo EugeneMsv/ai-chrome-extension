@@ -5,20 +5,10 @@ import { setupBlockedDomains } from './blockedDomains.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const { loadApiKey, saveApiKey } = setupApiKey();
-  const { loadMaxOutputTokens, saveMaxOutputTokens } = setupMaxOutputTokens();
-  const { loadPromptTemplates, savePromptTemplates } = setupPromptTemplates();
-  const { renderBlockedDomains } = setupBlockedDomains();
-
-  const applyChangesButton = document.getElementById('applyChanges');
-
-  // Apply changes button
-  applyChangesButton.addEventListener('click', async () => {
-    await saveApiKey();
-    await saveMaxOutputTokens();
-    await savePromptTemplates();
-    alert('Settings saved!');
-  });
+  setupApiKey();
+  setupMaxOutputTokens();
+  setupPromptTemplates();
+  setupBlockedDomains();
 
   // Tab functionality
   const tabButtons = document.querySelectorAll('.tablinks');

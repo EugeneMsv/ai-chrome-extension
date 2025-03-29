@@ -80,5 +80,5 @@ export function setupBlockedDomains() {
     addDomainInput.value = currentDomain;
   });
 
-  return { renderBlockedDomains };
+  return;
 }

@@ -2,8 +2,11 @@
 
 export function setupApiKey() {
   const apiKeyInput = document.getElementById('geminiApiKey');
-  if (!apiKeyInput) {
-    console.error("API Key input not found.");
+  const applyChangesButton = document.getElementById('aiSettings-apply');
+  const confirmationMessage = document.getElementById('aiSettingsConfirmation');
+
+  if (!apiKeyInput || !applyChangesButton || !confirmationMessage) {
+    console.error("API Key elements not found.");
     return;
   }
 
@@ -34,7 +37,16 @@ export function setupApiKey() {
     const apiKey = apiKeyInput.dataset.fullApiKey;
     if (apiKey) {
       await chrome.runtime.sendMessage({ action: 'saveApiKey', apiKey: apiKey });
+      showConfirmation(confirmationMessage);
     }
+  }
+
+  // Function to show confirmation message
+  function showConfirmation(messageElement) {
+    messageElement.style.display = 'block';
+    setTimeout(() => {
+      messageElement.style.display = 'none';
+    }, 3000); // Hide after 3 seconds
   }
 
   apiKeyInput.addEventListener('focus', () => {
@@ -53,5 +65,11 @@ export function setupApiKey() {
   // Load API key on popup open
   loadApiKey();
 
-  return { loadApiKey, saveApiKey };
+
+  // Apply changes button
+  applyChangesButton.addEventListener('click', async () => {
+    await saveApiKey();
+  });
+
+  return;
 }
