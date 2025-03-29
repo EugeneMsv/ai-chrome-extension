@@ -5,7 +5,6 @@ let hideTimeout = null;
 
 class SmartButton {
   constructor(buttonName, selectedText) {
-    console.log(`SmartButton: Creating ${buttonName} smart button`);
     this.button = document.createElement("button");
     this.button.textContent = buttonName;
     this.selectedText = selectedText;
@@ -78,7 +77,6 @@ class BubbleButton extends SmartButton {
   #setupEventListeners(clickHandler) {
     this.onClick = () => {
       event.stopPropagation(); // Prevent mouseup from bubbling up to the document
-      console.log(`SmartButton: ${this.buttonName} smart button click`);
       this.button.style.backgroundColor = '#6a66bb';
       clickHandler(this.selectedText)
     }
@@ -126,7 +124,6 @@ class AiButton extends SmartButton {
 
   #setupEventListeners() {
     this.onMouseOver = () => {
-      console.log('AiButton: AI button mouseover');
       if(!this.isShown) {
         this.show();
       }
@@ -189,7 +186,6 @@ class AiButton extends SmartButton {
   }
 
   show() {
-    console.log('AiButton: Showing bubble buttons');
     if(this.children.length == 0) {
       this.createBubbleButtons();
     }
@@ -223,7 +219,6 @@ let aiButtonComposite = null;
 
 function sendRequestToBackground(action, text, callback, additionalParams = {}) {
   try {
-    console.log(`sendRequestToBackground: Sending ${action} request`);
     chrome.runtime.sendMessage(
       {   action: action, text: text, ...additionalParams },
       (response) => {
@@ -232,6 +227,7 @@ function sendRequestToBackground(action, text, callback, additionalParams = {}) 
         } else {
           showPopup("No response received");
         }
+        if(aiButtonComposite)
         aiButtonComposite.hideContainer();
       }
     );
@@ -258,7 +254,6 @@ function handleTranslateClick(selectedText) {
 
 
 function showPopup(content) {
-  console.log('showPopup: Showing popup');
   const popup = document.createElement('div');
   popup.style.position = 'fixed';
   popup.style.left = '50%';
@@ -296,8 +291,10 @@ function showPopup(content) {
     closeButton.style.backgroundColor = '#444';
   });
   closeButton.addEventListener('click', () => {
-    console.log('showPopup: Close button clicked');
     closeButton.style.backgroundColor = 'red';
+    if(aiButtonComposite) {
+      aiButtonComposite.remove();
+    }
     document.body.removeChild(popup);
   });
 
@@ -352,7 +349,6 @@ async function handleSelectionAndShowAiButton(event) {
 }
 function showAiButton(selectedText, x, y) {
   if (selectedText) {
-    console.log('showAiButton: Creating AI button container');
     aiButtonComposite = new AiButton(x, y, selectedText);
     document.body.appendChild(aiButtonComposite.buttonContainer);
   } else {
@@ -373,7 +369,6 @@ document.addEventListener('keyup', () => {
 });
 
 document.addEventListener('mouseup', (event) => {
-  console.log('mouseup: Mouse up event triggered');
   // Clear any existing timeout
   if (debounceTimeout) {
     if(aiButtonComposite) {
