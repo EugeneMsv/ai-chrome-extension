@@ -1,6 +1,12 @@
 // popup/apiKey.js
 
-export function setupApiKey(apiKeyInput) {
+export function setupApiKey() {
+  const apiKeyInput = document.getElementById('geminiApiKey');
+  if (!apiKeyInput) {
+    console.error("API Key input not found.");
+    return;
+  }
+
   // Function to load API key
   async function loadApiKey() {
     const apiKey = await chrome.runtime.sendMessage({ action: 'getApiKey' });

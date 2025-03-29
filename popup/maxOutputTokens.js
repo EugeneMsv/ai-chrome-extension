@@ -1,6 +1,12 @@
 // popup/maxOutputTokens.js
 
-export function setupMaxOutputTokens(maxOutputTokensInput) {
+export function setupMaxOutputTokens() {
+  const maxOutputTokensInput = document.getElementById('maxOutputTokens');
+  if (!maxOutputTokensInput) {
+    console.error("Max Output Tokens input not found.");
+    return;
+  }
+
   // Function to load maxOutputTokens
   async function loadMaxOutputTokens() {
     const maxOutputTokens = await chrome.runtime.sendMessage({ action: 'getMaxOutputTokens' });

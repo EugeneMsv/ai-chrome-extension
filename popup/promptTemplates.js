@@ -1,6 +1,14 @@
 // popup/promptTemplates.js
 
-export function setupPromptTemplates(promptTemplatesContainer) {
+export function setupPromptTemplates() {
+  const promptTemplatesContainer = document.getElementById('promptTemplatesContainer');
+  const resetPromptsButton = document.getElementById('resetPrompts');
+
+  if (!promptTemplatesContainer || !resetPromptsButton) {
+    console.error("Prompt Templates elements not found.");
+    return;
+  }
+
   // Function to load and display prompt templates
   async function loadPromptTemplates() {
     const promptTemplates = await chrome.runtime.sendMessage({ action: 'getPromptTemplates' });
@@ -48,6 +56,12 @@ export function setupPromptTemplates(promptTemplatesContainer) {
 
   // Load prompt templates on popup open
   loadPromptTemplates();
+
+  // Reset prompts button
+  resetPromptsButton.addEventListener('click', async () => {
+    await chrome.runtime.sendMessage({ action: 'resetPromptTemplates' });
+    loadPromptTemplates(); // Reload templates after reset
+  });
 
   return { loadPromptTemplates, savePromptTemplates };
 }

@@ -1,6 +1,17 @@
 // popup/blockedDomains.js
 
-export function setupBlockedDomains(blockedDomainsListColumn1, blockedDomainsListColumn2, addDomainInput, addDomainButton) {
+export function setupBlockedDomains() {
+
+  const blockedDomainsListColumn1 = document.getElementById('blockedDomainsListColumn1');
+  const blockedDomainsListColumn2 = document.getElementById('blockedDomainsListColumn2');
+  const addDomainInput = document.getElementById('addDomainInput');
+  const addDomainButton = document.getElementById('addDomainButton');
+
+  if (!blockedDomainsListColumn1 || !blockedDomainsListColumn2 || !addDomainInput || !addDomainButton) {
+    console.error("Blocked Domains elements not found.");
+    return;
+  }
+
   async function renderBlockedDomains() {
     blockedDomainsListColumn1.innerHTML = '';
     blockedDomainsListColumn2.innerHTML = '';
