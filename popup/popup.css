@@ -42,7 +42,7 @@ button {
 }
 
 button:hover {
-  background-color: #e0e0e0; /* Slightly brighter on hover */
+  background-color: #1f49a2; /* Slightly brighter on hover */
 }
 
 .reset-button {
@@ -136,11 +136,10 @@ li {
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
-  background-color: #f1f1f1;
 }
 
 .tab button {
-  background-color: inherit;
+  background-color: #45b39d;
   float: left;
   border: none;
   outline: none;
@@ -151,11 +150,11 @@ li {
 }
 
 .tab button:hover {
-  background-color: #ddd;
+  background-color: #48c9b0;
 }
 
 .tab button.active {
-  background-color: #ccc;
+  background-color: #0e6655;
 }
 
 .tabcontent {

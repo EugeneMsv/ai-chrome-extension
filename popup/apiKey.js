@@ -1,11 +1,10 @@
 // popup/apiKey.js
 
-export function setupApiKey() {
+export function setupApiKey(confirmation) {
   const apiKeyInput = document.getElementById('geminiApiKey');
   const applyChangesButton = document.getElementById('aiSettings-apply');
-  const confirmationMessage = document.getElementById('aiSettingsConfirmation');
 
-  if (!apiKeyInput || !applyChangesButton || !confirmationMessage) {
+  if (!apiKeyInput || !applyChangesButton) {
     console.error("API Key elements not found.");
     return;
   }
@@ -37,16 +36,8 @@ export function setupApiKey() {
     const apiKey = apiKeyInput.dataset.fullApiKey;
     if (apiKey) {
       await chrome.runtime.sendMessage({ action: 'saveApiKey', apiKey: apiKey });
-      showConfirmation(confirmationMessage);
+      confirmation.showConfirmation();
     }
-  }
-
-  // Function to show confirmation message
-  function showConfirmation(messageElement) {
-    messageElement.style.display = 'block';
-    setTimeout(() => {
-      messageElement.style.display = 'none';
-    }, 3000); // Hide after 3 seconds
   }
 
   apiKeyInput.addEventListener('focus', () => {

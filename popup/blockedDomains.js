@@ -1,6 +1,6 @@
 // popup/blockedDomains.js
 
-export function setupBlockedDomains() {
+export function setupBlockedDomains(confirmation) {
 
   const blockedDomainsListColumn1 = document.getElementById('blockedDomainsListColumn1');
   const blockedDomainsListColumn2 = document.getElementById('blockedDomainsListColumn2');
@@ -52,7 +52,8 @@ export function setupBlockedDomains() {
       removeButton.classList.add('remove-domain-button');
       removeButton.addEventListener('click', async () => {
         await chrome.runtime.sendMessage({ action: 'removeBlockedDomain', domain: domain });
-        renderBlockedDomains();
+        await renderBlockedDomains();
+        confirmation.showConfirmation();
       });
       const buttonsContainer = document.createElement('div');
       buttonsContainer.classList.add('domain-list-buttons');
@@ -70,6 +71,7 @@ export function setupBlockedDomains() {
       await chrome.runtime.sendMessage({ action: 'addBlockedDomain', domain: domain });
       addDomainInput.value = '';
       await renderBlockedDomains();
+      confirmation.showConfirmation();
     }
   });
 

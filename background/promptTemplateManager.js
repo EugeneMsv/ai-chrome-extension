@@ -6,7 +6,7 @@ export const defaultPromptTemplates = {
   summarize: `Summarize the following text concisely: "{{text}}"`,
   meaning: `Explain the meaning of the following text concisely: "{{text}}"`,
   rephrase: `Rephrase the following text concisely: "{{text}}"`,
-  translate: `Translate the following text to {{targetLanguage}} concisely: "{{text}}"`
+  translate: `Translate the following text to Russian concisely: "{{text}}"`
 };
 
 export async function getPromptTemplates() {

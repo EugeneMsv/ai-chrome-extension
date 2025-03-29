@@ -1,14 +1,16 @@
+import { Confirmation } from './confirmation.js';
 import { setupPromptTemplates } from './promptTemplates.js';
 import { setupApiKey } from './apiKey.js';
 import { setupMaxOutputTokens } from './maxOutputTokens.js';
 import { setupBlockedDomains } from './blockedDomains.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const confirmation = new Confirmation();
 
-  setupApiKey();
-  setupMaxOutputTokens();
-  setupPromptTemplates();
-  setupBlockedDomains();
+  setupApiKey(confirmation);
+  setupMaxOutputTokens(confirmation);
+  setupPromptTemplates(confirmation);
+  setupBlockedDomains(confirmation);
 
   // Tab functionality
   const tabButtons = document.querySelectorAll('.tablinks');
