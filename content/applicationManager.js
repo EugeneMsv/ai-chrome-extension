@@ -2,101 +2,168 @@
 
 import { AiButton } from './aiButton.js';
 import { BubbleButton } from './bubbleButton.js';
-import { PopupHandler } from './popupHandler.js'; // Only import PopupHandler
+import { PopupHandler } from './popupHandler.js';
 
 let debounceTimeout = null;
 
 export class ApplicationManager {
   constructor() {
+    // Initialize properties that are core to the manager's identity
+    // and don't depend on the current page state immediately.
     this.currentAiButton = null;
-    this.isBlocked = false;
-    this.popupHandler = new PopupHandler();
-    this._checkDomainBlocked();
-    this._setupEventListeners();
-    console.log("ApplicationManager initialized.");
+    this.isBlocked = false; // Initial assumption, will be checked in start()
+    this.popupHandler = new PopupHandler(); // Core dependency
+
+    console.log("ApplicationManager instance created.");
+    // Domain check and event listeners are moved to start()
+  }
+
+  /**
+   * Starts the ApplicationManager by performing initial checks and setting up listeners.
+   * Should be called after the instance is created.
+   */
+  async start() {
+    console.log("ApplicationManager starting...");
+    try {
+      await this._checkDomainBlocked(); // Perform initial domain block check
+
+      if (this.isBlocked) {
+        console.log("ApplicationManager: Domain is blocked. Event listeners will not be set up.");
+        // Optionally, you could add logic here to completely disable the extension's UI
+        // on this page if needed, beyond just not showing the button.
+      } else {
+        console.log("ApplicationManager: Domain is not blocked. Setting up event listeners.");
+        this._setupEventListeners(); // Setup listeners only if not blocked
+        console.log("ApplicationManager started successfully and listening for events.");
+      }
+    } catch (error) {
+      console.error("Error during ApplicationManager startup:", error);
+      // Decide how to handle startup errors
+    }
   }
 
   async _checkDomainBlocked() {
     this.isBlocked = await this._isCurrentDomainBlocked();
+    console.log(`Initial domain blocked status: ${this.isBlocked}`);
   }
 
   _isCurrentDomainBlocked() {
-    // ... (implementation unchanged)
     return new Promise((resolve) => {
       if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.sendMessage) {
         console.warn("Chrome runtime not available. Assuming domain is not blocked.");
-        resolve(false); return;
+        resolve(false);
+        return;
       }
       chrome.runtime.sendMessage({ action: 'isDomainBlocked' }, (response) => {
         if (chrome.runtime.lastError) {
-          console.error('Error checking domain blocked status:', chrome.runtime.lastError.message); resolve(false);
-        } else { resolve(response?.isBlocked ?? false); }
+          console.error('Error checking domain blocked status:', chrome.runtime.lastError.message);
+          resolve(false); // Assume not blocked on error
+        } else {
+          resolve(response?.isBlocked ?? false);
+        }
       });
     });
   }
 
   _setupEventListeners() {
-    // ... (implementation unchanged)
-    document.addEventListener('mouseup', (event) => this._handleSelectionChange(event));
+    // Listen for mouse up events to detect text selection
+    document.addEventListener('mouseup', this._handleSelectionChange); // Bind `this`
+
+    // Listen for messages from the background script (e.g., domain block changes)
     if (chrome.runtime?.onMessage) {
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.action === 'domainBlockStatusChanged') {
-          console.log("Domain block status potentially changed, re-checking...");
-          this._checkDomainBlocked().then(() => {
-            if (this.currentAiButton && this.isBlocked) { this.removeCurrentAiButton(); }
-          });
-          sendResponse({ received: true }); return true;
-        }
-      });
-    } else { console.warn("Chrome runtime.onMessage not available."); }
+      chrome.runtime.onMessage.addListener(this._handleBackgroundMessages); // Bind `this`
+    } else {
+      console.warn("Chrome runtime.onMessage not available. Domain block updates won't be received.");
+    }
+    console.log("Event listeners set up.");
   }
 
-  _handleSelectionChange(event) {
-    // ... (implementation unchanged)
+  // Using bound methods or arrow functions for event handlers to maintain `this` context
+  _handleBackgroundMessages = (message, sender, sendResponse) => {
+    if (message.action === 'domainBlockStatusChanged') {
+      console.log("Domain block status potentially changed, re-checking...");
+      this._checkDomainBlocked().then(() => {
+        // If the domain is now blocked, remove any existing button
+        if (this.currentAiButton && this.isBlocked) {
+          this.removeCurrentAiButton();
+        }
+      });
+      sendResponse({ received: true });
+      return true; // Indicate async response
+    }
+    // Handle other potential messages if needed
+  }
+
+  _handleSelectionChange = (event) => { // Use arrow function for `this`
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(async () => {
-      if (this.isBlocked) { this.removeCurrentAiButton(); return; }
-      const selectedText = window.getSelection().toString().trim();
+      // Always check the current blocked status before showing the button
+      if (this.isBlocked) {
+        this.removeCurrentAiButton(); // Ensure button is removed if domain becomes blocked
+        return;
+      }
+
       const selection = window.getSelection();
+      const selectedText = selection?.toString().trim() ?? '';
+
       if (selectedText && selection.rangeCount > 0) {
+        // Use event coordinates for initial calculation relative to viewport
         const position = this._calculateButtonPosition(event.clientX, event.clientY);
-        const pageX = position.x + window.pageXOffset;
-        const pageY = position.y + window.pageYOffset;
+        // Add scroll offsets for absolute page positioning
+        const pageX = position.x + window.scrollX;
+        const pageY = position.y + window.scrollY;
+
         if (this.currentAiButton) {
           const positionChanged = Math.abs(this.currentAiButton.positionX - pageX) > 5 || Math.abs(this.currentAiButton.positionY - pageY) > 5;
+          // If text or position changed significantly, replace the button
           if (this.currentAiButton.selectedText !== selectedText || positionChanged) {
-            this.removeCurrentAiButton(); this.createAndShowAiButton(selectedText, pageX, pageY);
-          } else { this.currentAiButton.show(); }
-        } else { this.createAndShowAiButton(selectedText, pageX, pageY); }
-      } else { this.removeCurrentAiButton(); }
-    }, 150);
+            this.removeCurrentAiButton();
+            this.createAndShowAiButton(selectedText, pageX, pageY);
+          } else {
+            // If text and position are the same, just ensure it's visible (might have been hidden)
+            this.currentAiButton.show();
+          }
+        } else {
+          // No current button, create a new one
+          this.createAndShowAiButton(selectedText, pageX, pageY);
+        }
+      } else {
+        // No text selected, remove any existing button
+        this.removeCurrentAiButton();
+      }
+    }, 150); // Debounce time to avoid flickering during selection adjustments
   }
 
   _calculateButtonPosition(clientX, clientY) {
-    // ... (implementation unchanged)
-    let x = clientX; let y = clientY;
-    const windowWidth = window.innerWidth; const windowHeight = window.innerHeight;
-    const containerSize = 200; const buttonRadius = containerSize / 2; const margin = 20;
-    let targetX = x + buttonRadius / 2; let targetY = y + buttonRadius / 2;
-    if (targetX + buttonRadius > windowWidth - margin) { targetX = x - buttonRadius * 1.5; }
-    if (targetY + buttonRadius > windowHeight - margin) { targetY = y - buttonRadius * 1.5; }
-    targetX = Math.max(margin + buttonRadius, targetX); targetY = Math.max(margin + buttonRadius, targetY);
+    // Calculate position relative to the viewport, trying to stay near the cursor
+    const buttonSize = 40; // Approximate size of the main AI button icon
+    const margin = 10;     // Minimum space from window edges
+    const offset = 15;     // How far below and right of the cursor to initially place it
+
+    let targetX = clientX + offset;
+    let targetY = clientY + offset;
+
+    // Adjust if it goes off-screen (right or bottom)
+    targetX = Math.min(targetX, window.innerWidth - buttonSize - margin);
+    targetY = Math.min(targetY, window.innerHeight - buttonSize - margin);
+
+    // Ensure it doesn't go off-screen (left or top)
+    targetX = Math.max(margin, targetX);
+    targetY = Math.max(margin, targetY);
+
     return { x: targetX, y: targetY };
   }
 
-  // --- Action Handlers (Use the generic popupHandler method) ---
+  // --- Action Handlers ---
+  // No changes needed here, they already use this.popupHandler correctly
 
   handleSummarizeClick = (selectedText, aiButton) => {
     this.popupHandler.showPopupForAction(
-      'summarize',                // Action name
-      '<i>Summarizing...</i>',    // Loading message
-      selectedText,               // Text data
-      aiButton                    // Associated button
-      // No additional params needed here
-    )
-    // We don't need .then() or .catch() here anymore for popup updates
-      .finally(() => {
-      // Still hide the button when the operation (success or fail) completes
+      'summarize',
+      '<i>Summarizing...</i>',
+      selectedText,
+      aiButton
+    ).finally(() => {
       aiButton?.hide();
     });
   }
@@ -107,8 +174,7 @@ export class ApplicationManager {
       '<i>Fetching meaning...</i>',
       selectedText,
       aiButton
-    )
-      .finally(() => {
+    ).finally(() => {
       aiButton?.hide();
     });
   }
@@ -119,8 +185,7 @@ export class ApplicationManager {
       '<i>Rephrasing...</i>',
       selectedText,
       aiButton
-    )
-      .finally(() => {
+    ).finally(() => {
       aiButton?.hide();
     });
   }
@@ -131,17 +196,22 @@ export class ApplicationManager {
       '<i>Translating...</i>',
       selectedText,
       aiButton,
-      { targetLanguage: 'Russian' } // Pass additional params
-    )
-      .finally(() => {
+      { targetLanguage: 'Russian' } // Example additional params
+    ).finally(() => {
       aiButton?.hide();
     });
   }
 
-  // --- Button Creation (Unchanged) ---
+  // --- Button Creation & Removal ---
+  // No fundamental changes needed here
 
   createAndShowAiButton(selectedText, pageX, pageY) {
-    if (this.currentAiButton) { this.removeCurrentAiButton(); }
+    if (this.currentAiButton) {
+      console.warn("Attempted to create an AI button when one already exists. Removing old one.");
+      this.removeCurrentAiButton();
+    }
+
+    console.log(`Creating AI button for text: "${selectedText.substring(0, 30)}..." at (${pageX}, ${pageY})`);
     this.currentAiButton = new AiButton(pageX, pageY);
     this.currentAiButton.selectedText = selectedText;
     this.currentAiButton.positionX = pageX;
@@ -165,6 +235,7 @@ export class ApplicationManager {
 
   removeCurrentAiButton() {
     if (this.currentAiButton) {
+      console.log("Removing current AI button.");
       this.currentAiButton.remove();
       this.currentAiButton = null;
       this.popupHandler.closeCurrentPopup(); // Close popup when button is removed
