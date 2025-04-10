@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   mode: 'development', // or 'production' for optimized builds
   entry: {
-    content: './content/content.js', // Entry point for your content script
+    content: './content/main.js', // Entry point for your content script
     background: './background/background.js' // Entry point for your background script
   },
   output: {
