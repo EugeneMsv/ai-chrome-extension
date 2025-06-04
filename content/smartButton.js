@@ -34,7 +34,7 @@ export class SmartButton {
 
   // Default color, can be overridden
   getDefaultColor() {
-    return '#4CAF50';
+    return '#007BFF';
   }
 
 
@@ -42,7 +42,7 @@ export class SmartButton {
   _onMouseOverDefault() {
     if (!this.button) return;
     this.button.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.8)';
-    this.button.style.backgroundColor = '#2dfa35'; // Lighter green
+    this.button.style.backgroundColor = '#58A6FF'; // Lighter green
   }
 
   // Default mouse out effect
