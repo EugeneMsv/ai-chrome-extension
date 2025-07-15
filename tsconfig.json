@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Or a newer ES version supported by modern browsers
+    "module": "ESNext", // Use modern ES modules
+    "moduleResolution": "node",
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Enables compatibility with CommonJS modules
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist_ts_temp", // Temporary output directory for TS (Webpack will handle final bundling)
+    "rootDir": "./", // Or specify './background' if only background is TS
+    "baseUrl": "./", // Helps with path resolution
+    "paths": {// Optional: if you want to use path aliases
+      "@background/*": [
+        "background/*"
+      ],
+      "@common/*": [
+        "common/*"
+      ]// Example if you have a common folder
+    },
+    "sourceMap": true, // Generate source maps for debugging
+    "noImplicitAny": true, // Raise error on expressions and declarations with an implied 'any' type.
+    "allowJs": true, // Allow JavaScript files to be compiled (useful for gradual migration)
+    "checkJs": false // Do not type-check JS files by default (can be enabled per file with // @ts-check)
+  },
+  "include": [
+    "background/**/*.ts", // Include all .ts files in the background directory
+    "background/**/*.js"// Include .js files if allowJs is true and you're migrating gradually
+    // Add other paths if you have shared TypeScript files outside 'background'
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"// Exclude your final Webpack output directory
+  ]
+}
