@@ -1,30 +1,68 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'development', // or 'production' for optimized builds
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  
   entry: {
-    content: './content/main.js', // Entry point for your content script
-    background: './background/background.js' // Entry point for your background script
+    background: './src/application/background/background.service.ts',
+    content: './src/ui/content-scripts/main.ts', 
+    popup: './src/ui/popup/main-popup.ts',
+    options: './src/ui/options/options-page.ts'
   },
+  
   output: {
-    filename: '[name].bundle.js', // Output file name
-    path: path.resolve(__dirname, 'dist'), // Output directory
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].bundle.js',
+    clean: true
   },
+  
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.ts$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: 'ts-loader',
           options: {
-            presets: ['@babel/preset-env']
+            configFile: 'tsconfig.json',
+            transpileOnly: false, // Full type checking
+            compilerOptions: {
+              noEmitOnError: true // Fail build on TS errors
+            }
           }
         }
       }
     ]
   },
-devtool: 'cheap-module-source-map' // Add this line
-
+  
+  resolve: {
+    extensions: ['.ts'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@types': path.resolve(__dirname, 'src/types'),
+      '@infrastructure': path.resolve(__dirname, 'src/infrastructure'),
+      '@domain': path.resolve(__dirname, 'src/domain'),
+      '@application': path.resolve(__dirname, 'src/application'),
+      '@ui': path.resolve(__dirname, 'src/ui')
+    }
+  },
+  
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        shared: {
+          name: 'shared',
+          minChunks: 2,
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    }
+  },
+  
+  devtool: process.env.NODE_ENV === 'development' 
+    ? 'cheap-module-source-map' 
+    : 'source-map'
 };
         
