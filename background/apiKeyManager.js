@@ -6,7 +6,7 @@ export async function getApiKey() {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get([API_KEY_STORAGE_KEY], (result) => {
       if (!result[API_KEY_STORAGE_KEY]) {
-        console.error("Gemini API Key is not configured. Please set it up in the extension options.");
+        console.info("Gemini API Key is not configured. Please set it up in the extension options.");
         reject("Gemini API Key is not configured. Please set it up in the extension options.");
       } else {
         resolve(result[API_KEY_STORAGE_KEY]);
