@@ -65,12 +65,23 @@ This is a Chrome Extension (Manifest V3) that integrates with Google Gemini API 
 - Development mode with source maps enabled
 - Custom zip script packages extension for distribution (excludes node_modules, scripts, .env)
 
+### Testing
+- Jest framework configured for unit and integration testing
+- Chrome extension testing utilities in `tests/setup/chrome-extension-setup.js`
+- Integration tests for API key management in `tests/api-key-integration.test.js`
+- Run tests with standard Jest commands
+
 ### Dependencies
 - `marked` - Markdown rendering for popup content
 - `archiver` - ZIP file creation for extension packaging
 - Webpack/Babel toolchain for build process
+- Jest testing framework for unit and integration tests
 
 ### Storage and Configuration
 - Chrome storage API used for API keys, domain blocking, and prompt templates
 - Environment variables can be used for API configuration
 - Options page provides UI for API key and domain blocking configuration
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for detailed version history and release notes.
